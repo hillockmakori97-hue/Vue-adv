@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <p>{{day}}</p><br>
+        <button :disabled="marks>5" @click="add_marks">Add</button><br>&nbsp; | &nbsp;
+        <button :disabled="marks<=0" @click="subtract_marks"> Subtract </button>
+        {{marks}}
+        <button @click="api_call">Call Api</button>
+        <p> API:{{ api }}</p>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.2.0/vue.js">
+
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.25.0/axios.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data:{
+                day: 'Thursday',
+                marks: 0,
+                api:''
+            },
+            methods:{
+                add_marks(){
+                    this.marks = this.marks + 1
+                },
+                subtract_marks(){
+                    this.marks=this.marks-1
+                },
+                async api_call(){
+                    const res= await axios.get("http://127.0.0.1:5000/")
+                    console.log('results is ',res.data)
+                    this.api=res.data['Flask API']
+                }
+            }
+        });
+    </script>
+</body>
+<!-- CORS - this happens when the api is not allowing requeats from any other app apart from postman.So we go to main.py tand add a library called cors
+ ie pip install CORS  and add a line in you code to allow the api to be requested by other 
+ apps e.g Vue using axios-->
+</html>
