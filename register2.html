@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    </head>
+
+    <body>
+        <form>
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Email address</label>
+                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+            </div>
+            <div class="mb-3">
+                <label for="exampleInputPassword1" class="form-label">Password</label>
+                <input type="password" class="form-control" id="exampleInputPassword1">
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                <label class="form-check-label" for="exampleCheck1">Check me out</label>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.2.0/vue.js">
+
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.25.0/axios.js"></script>
+        <script>
+            new ({
+                el: "#app",
+                data: {
+                    full_name: "",
+                    email: "",
+                    password: "",
+                    alertMessage: "",
+                    alertSuccessShow: false,
+                    alertDangerShow: false
+
+                },
+                methods: {
+                    async register_user() {
+                        // 1. Validation check
+                        if (this.full_name === "" || this.email === "" || this.password === "") {
+                            this.alertDangerShow = true;
+                            this.alertMessage = "Ensure all fields are filled";
+                            return;
+                        }
+
+                        // 2. Make API Request
+                        try {
+                            const response = await axios.post("http://127.0.0.1:5000/register", {
+                                full_name: this.full_name,
+                                email: this.email,
+                                password: this.password
+                            });
+
+                            // Handle successful response here
+                            console.log("Registration successful:", response.data);
+
+                        } catch (error) {
+                            // Handle request errors
+                            this.alertDangerShow = true;
+                            this.alertMessage = error.response?.data?.message || "An error occurred during registration.";
+                            console.error("Registration error:", error);
+                        }
+                    }
+                }
+            })
+        </script>
+
+    </body>
+
+    </html>
+</body>
+
+</html>
