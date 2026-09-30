@@ -77,13 +77,16 @@
                         this.alertDangerShow = false;
                         this.alertSuccessShow = true;
                         this.alertMessage = "User registered successfully";
-
+                        console.log(response.data)
                         localStorage.setItem("token", response.data.token);
+                        localStorage.setItem("user",JSON.stringify(response.data.user))
                         window.location.href = "index.html";
+                        
                     })
                     .catch((error) => {
                         this.alertSuccessShow = false;
                         this.alertDangerShow = true;
+
                         
                 
                         const serverError = error.response?.data;
