@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+
+</head>
+
+<body>
+    <div id="app" class="container mt-5" style="max-width: 500px;">
+        <!-- Alerts for feedback -->
+        <div v-if="alertDangerShow" class="alert alert-danger" role="alert">
+            {{ alertMessage }}
+        </div>
+        <div v-if="alertSuccessShow" class="alert alert-success" role="alert">
+            {{ alertMessage }}
+        </div>
+
+        <form @submit.prevent='login_user'>
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Email address</label>
+                <input type="email" v-model="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+            </div>
+            <div class="mb-3">
+                <label for="exampleInputPassword1" class="form-label">Password</label>
+                <input type="password" v-model="password" class="form-control" id="exampleInputPassword1">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.7.16/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+
+    <script>
+        new Vue({
+            el: "#app",
+            data: {
+                email: '',
+                password: '',
+                alertMessage: '',
+                alertSuccessShow: false,
+                alertDangerShow: false
+
+            },
+            methods: {
+                async login_user() {
+                    if (this.email == '' || this.password == '') {
+                        this.alertMessage = "ensure all fields are set"
+                        this.alertDangerShow = true
+                        return
+                    }
+                    try {
+                        const res = await axios.post("http://127.0.0.1:5000/login", {
+                            email: this.email,
+                            password: this.password
+                        })
+
+                        if (res.data.token) {
+                            localStorage.setItem('token', res.data.token)
+                            this.alertDangerShow = false
+                            this.alertSuccessShow=true
+                            window.location.href = 'index.html'
+                            console.log(res.data.token)
+                        }
+                    } catch (error) {
+                        this.alertDangerShow = true
+                        if (error.response.data?.error) {
+                            this.alertMessage = error.response.data.error
+
+                        }else if(error.response && error.response.status===401){
+                            this.alertMessage='Invalid credentials'
+                        }else{
+                            this.alertMessage='Unable to connect to Server'
+                        }
+                    }
+
+
+
+
+
+
+
+                }
+
+            },
+            mounted() {
+
+            }
+        }
+        )
+    </script>
+</body>
+
+</html>
