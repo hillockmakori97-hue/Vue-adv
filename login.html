@@ -11,6 +11,22 @@
 </head>
 
 <body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Navbar</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+                aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav">
+                    <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+                    <a class="nav-link" href="products.html">Products</a>
+                    <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+                </div>
+            </div>
+        </div>
+    </nav>
     <div id="app" class="container mt-5" style="max-width: 500px;">
         <!-- Alerts for feedback -->
         <div v-if="alertDangerShow" class="alert alert-danger" role="alert">
@@ -66,7 +82,7 @@
                             localStorage.setItem('token', res.data.token)
                             this.alertDangerShow = false
                             this.alertSuccessShow=true
-                            window.location.href = 'index.html'
+                            window.location.href = 'products.html'
                             console.log(res.data.token)
                         }
                     } catch (error) {
