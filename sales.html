@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.datatables.net/3.1.3/css/dataTables.bootstrap5.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.8/css/bootstrap.min.css">
+    <title>Sales</title>
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- DataTables CSS CDN -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 </head>
 
 <body>
@@ -21,165 +21,202 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
-                    <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+                    <a class="nav-link" href="index.html">Home</a>
                     <a class="nav-link" href="products.html">Products</a>
+                    <a class="nav-link active" aria-current="page" href="sales.html">Sales</a>
                     <a class="nav-link" href="login.html">Login</a>
-                    <a class="nav-link disabled" aria-disabled="true">Disabled</a>
                 </div>
             </div>
         </div>
     </nav>
-    <div id="app">
-        <table id="example" class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Sale_id</th>
-                    <th>User_id</th>
-                    <th>Date Sold</th>
-                </tr>
-            </thead>
-            <tbody>
-            <tbody>
-                <tr v-for="i in res">
-                    <td>{{ i.id }}</td>
-                    <td>{{ i.user_id }}</td>
-                    <td>{{ i.date_sold }}</td>
-                </tr>
-            </tbody>
-            </tbody>
-        </table>
-        <!-- Button trigger modal -->
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-            Add Sale
-        </button>
 
-        <!-- Modal -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div id="app" class="container mt-5">
+        <h2 class="mb-4">Sales Management</h2>
+
+        <!-- Add Sale Form Card -->
+        <div class="card p-4 mb-5 shadow-sm">
+            <h5 class="card-title mb-3">Add New Sale</h5>
+            <form @submit.prevent="add_sale">
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <label for="userIdInput" class="form-label">User Id</label>
+                        <input type="text" v-model="userId" class="form-control" id="userIdInput" placeholder="Enter user ID" required>
+                    </div>
+                    <div class="col-md-5">
+                        <label for="dateSoldInput" class="form-label">Date Sold</label>
+                        <input type="date" v-model="dateSold" class="form-control" id="dateSoldInput" required>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">Add Sale</button>
+                    </div>
+                </div>
+
+                <div class="alert alert-success mt-3" v-if="alertSuccessShow">
+                    {{ alertMessage }}
+                </div>
+                <div class="alert alert-danger mt-3" v-if="alertDangerShow">
+                    {{ alertMessage }}
+                </div>
+            </form>
+        </div>
+
+        <!-- Data Table -->
+        <div class="card p-4 shadow-sm">
+            <h5 class="card-title mb-3">Sales List</h5>
+            <table id="example" class="table table-striped table-bordered w-100">
+                <thead>
+                    <tr>
+                        <th>Sale_id</th>
+                        <th>User_id</th>
+                        <th>Date Sold</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="i in res" :key="i.id">
+                        <td>{{ i.id }}</td>
+                        <td>{{ i.user_id }}</td>
+                        <td>{{ i.date_sold }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editModal"
+                                @click="editSale(i)">
+                                EDIT
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Edit Modal -->
+        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                        <h5 class="modal-title" id="editModalLabel">Edit Sale</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form @submit.prevent="add_sale">
-
+                        <form @submit.prevent="update_sale">
                             <div class="mb-3">
-                                <label for="userIdInput" class="form-label">User Id</label>
-                                <input type="text" v-model="userId" class="form-control" id="userIdInput" required>
+                                <label for="editUserId" class="form-label">User ID</label>
+                                <input type="text" v-model="sale_edit.user_id" class="form-control"
+                                    id="editUserId" required>
                             </div>
-
                             <div class="mb-3">
-                                <label for="dateSoldInput" class="form-label">Date Sold</label>
-                                <input type="date" v-model="dateSold" class="form-control" id="dateSoldInput" required>
+                                <label for="editDateSold" class="form-label">Date Sold</label>
+                                <input type="date" v-model="sale_edit.date_sold" class="form-control"
+                                    id="editDateSold" required>
                             </div>
-
-                            <div class="modal-footer">
+                            <div class="modal-footer px-0 pb-0">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <!-- Adding data-bs-dismiss="modal" directly to the submit button -->
-                                <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Save
-                                    changes</button>
+                                <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Save Changes</button>
                             </div>
-
                         </form>
                     </div>
-
                 </div>
-
-
             </div>
         </div>
-    </div>
 
     </div>
 
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-        crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.8/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.datatables.net/3.1.3/js/dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/3.1.3/js/dataTables.bootstrap5.min.js"></script>
+    <!-- CDNs -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.7.16/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
     <script>
         new Vue({
-            'el': '#app',
+            el: '#app',
             data: {
-                salesStock: [],
-                SaleId: '',
                 userId: '',
                 dateSold: '',
                 alertMessage: '',
                 alertSuccessShow: false,
                 alertDangerShow: false,
-                res: []
+                res: [],
+                sale_edit: {
+                    id: null,
+                    user_id: '',
+                    date_sold: ''
+                }
             },
             methods: {
                 headers() {
                     return {
                         Authorization: `Bearer ${localStorage.getItem('token')}`
-                    }
+                    };
                 },
                 async salesStockCall() {
                     try {
-                        const results = await axios.get('http://127.0.0.1:5000/sales', { headers: this.headers() })
-                        this.res = results.data
-                        // console.log(results)
-                        console.log(this.res)
+                        const results = await axios.get('http://127.0.0.1:5000/sales', { headers: this.headers() });
+                        this.res = results.data;
+                    } catch (error) {
+                        console.log(error);
                     }
-                    catch (error) {
-                        if (error.response) {
-                            const status = error.response.status
-                            const message = error.response.data?.message || error.response.data
-                            if (status === 401) {
-                                console.log(message)
-                            } else if (status === 404) {
-                                console.log(message)
-                            } else {
-                                console.log(message)
-                            }
-                        }
-                    }
-
                 },
                 async add_sale() {
-                    try {
-                        if (this.userId && this.dateSold) {
-                            await axios.post('http://127.0.0.1:5000/sales', {
-                                user_id: this.userId,
-                                date_sold: this.dateSold
+                    this.alertSuccessShow = false;
+                    this.alertDangerShow = false;
 
-                            },
-
-
-                                {
-                                    headers: this.headers()
-                                })
-                            this.alertSuccessShow = true
-                            this.alertMessage = "Sale Added Successfully"
-                            await this.salesStockCall()
-                        }
-                    } catch (error) {
-
+                    if (!this.userId || !this.dateSold) {
+                        this.alertDangerShow = true;
+                        this.alertMessage = "Ensure all fields are filled";
+                        return;
                     }
 
+                    try {
+                        await axios.post('http://127.0.0.1:5000/sales', {
+                            user_id: this.userId,
+                            date_sold: this.dateSold
+                        }, {
+                            headers: this.headers()
+                        });
 
+                        this.alertSuccessShow = true;
+                        this.alertMessage = "Sale Added Successfully";
+                        
+                        // Clear input fields
+                        this.userId = '';
+                        this.dateSold = '';
+
+                        await this.salesStockCall();
+                    } catch (error) {
+                        console.log(error);
+                        this.alertDangerShow = true;
+                        this.alertMessage = error.response?.data?.error || error.response?.data?.message || "Failed to add sale";
+                    }
+                },
+                editSale(sale) {
+                    this.sale_edit.id = sale.id;
+                    this.sale_edit.user_id = sale.user_id;
+                    this.sale_edit.date_sold = sale.date_sold;
+                },
+                async update_sale() {
+                    try {
+                        const update = await axios.put(`http://127.0.0.1:5000/sales/${this.sale_edit.id}`,
+                            this.sale_edit, {
+                                headers: this.headers()
+                            }
+                        );
+                        this.alertSuccessShow = true;
+                        this.alertMessage = update.data.Message || "Sale Updated Successfully";
+                        await this.salesStockCall();
+                    } catch (error) {
+                        console.log(error);
+                        this.alertDangerShow = true;
+                        this.alertMessage = error.response?.data?.error || "Failed to update sale";
+                    }
                 }
-
             },
             mounted() {
-                this.salesStockCall()
+                this.salesStockCall();
             }
-
-        },
-
-        );
+        });
     </script>
-
 </body>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.7.16/vue.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
 
 </html>
