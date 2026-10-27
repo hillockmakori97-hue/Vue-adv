@@ -36,12 +36,8 @@
             <h5 class="card-title mb-3">Add New Product</h5>
             <form @submit.prevent="add_product">
                 <div class="row g-3">
-                    <div class="col-md-4">
-                        <label for="productName" class="form-label">userId</label>
-                        <input type="text" v-model="userId" class="form-control" id="productName"
-                            placeholder="Enter product name" required>
-                    </div>
-                    <div class="col-md-4">
+                    
+                    <div class="col-md-3">
                         <label for="productName" class="form-label">Product Name</label>
                         <input type="text" v-model="name" class="form-control" id="productName"
                             placeholder="Enter product name" required>
